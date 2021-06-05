@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace ContactManager.Providers
+namespace ContactManager.Providers.Repository
 {
     public interface IContactsRepository
     {

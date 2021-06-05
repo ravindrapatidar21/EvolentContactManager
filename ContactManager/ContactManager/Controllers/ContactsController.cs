@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ContactManager.Entities;
-using ContactManager.Providers;
 using System;
 using System.Collections.Generic;
+using ContactManager.Providers.Repository;
 
 namespace ContactManager.API.Controllers
 {

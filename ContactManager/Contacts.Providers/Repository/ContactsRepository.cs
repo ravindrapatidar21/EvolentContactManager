@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Bogus;
 using ContactManager.Entities;
-namespace ContactManager.Providers
+namespace ContactManager.Providers.Repository
 {
     public class ContactsRepository : IContactsRepository
     {
