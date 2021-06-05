@@ -3,18 +3,25 @@ using System.Collections.Generic;
 using System.Linq;
 using Bogus;
 using ContactManager.Entities;
+using ContactManager.Providers.DataContext;
+
 namespace ContactManager.Providers.Repository
 {
     public class ContactsRepository : IContactsRepository
     {
+        private readonly ContactsDbContext _contactsDbContext;
         private static List<Contacts> contactsList = new List<Contacts>();
+        public ContactsRepository(ContactsDbContext contactsDbContext)
+        {
+            _contactsDbContext = contactsDbContext;
+        }
         public Contacts Add(Contacts item)
         {
-            item.Id = new Random().Next(1001, 2000);
-            contactsList.Add(item);
+            _contactsDbContext.Contacts.Add(item);
+            _contactsDbContext.SaveChanges();
             return item;
         }
-
+        
         public Contacts Find(int Id)
         {
             var contactItem = contactsList.Find(e => e.Id == Id);
@@ -23,7 +30,7 @@ namespace ContactManager.Providers.Repository
 
         public IEnumerable<Contacts> GetAll()
         {
-            contactsList = FakeContacts().Generate(10);
+            contactsList = _contactsDbContext.Contacts.ToList<Contacts>();
             return contactsList;
         }
 
@@ -46,39 +53,6 @@ namespace ContactManager.Providers.Repository
             return itemToUpdate;
         }
 
-        #region FakeData
-        private List<ContactEmails> FakeContactEmails()
-        {
-            var fakeContactEmails = new Faker<ContactEmails>()
-                .RuleFor(c => c.Id, f => f.IndexVariable++)
-                .RuleFor(c => c.Email, (f, u) => f.Internet.Email())
-                .RuleFor(c => c.IsPrimary, f => f.Random.Bool());
-
-            return fakeContactEmails.Generate(4);
-        }
-
-        private List<ContactPhones> FakeContactPhones()
-        {
-            var fakeContactEmails = new Faker<ContactPhones>()
-                .RuleFor(c => c.Id, f => f.IndexVariable++)
-                .RuleFor(c => c.Phone, f => f.Phone.PhoneNumber())
-                .RuleFor(c => c.Type, f => f.PickRandom<PhoneType>())
-                .RuleFor(c => c.IsPrimary, f => f.Random.Bool());
-
-            return fakeContactEmails.Generate(4);
-        }
-
-        private Faker<Contacts> FakeContacts()
-        {
-            var fakeContact = new Faker<Contacts>()
-                .RuleFor(c => c.Id, f => f.Random.Number(1, 1000))
-                .RuleFor(c => c.FirstName, f => f.Name.FirstName())
-                .RuleFor(c => c.LastName, f => f.Name.LastName())
-                .RuleFor(c => c.EmailAddresses, f => FakeContactEmails())
-                .RuleFor(c => c.PhoneNumbers, f => FakeContactPhones());
-
-            return fakeContact;
-        }
-        #endregion
+       
     }
 }
